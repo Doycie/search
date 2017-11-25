@@ -168,8 +168,7 @@ class Queue:
         "Returns true if the queue is empty"
         return len(self.list) == 0
 
-class 
-:
+class PriorityQueue:
     """
       Implements a priority queue data structure. Each inserted item
       has a priority associated with it and the client is usually interested

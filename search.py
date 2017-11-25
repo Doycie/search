@@ -74,38 +74,43 @@ def tinyMazeSearch(problem):
 
 def searchWithDatastruct2(problem, option):
 
+    #Option specifies which datastructer to use
     if(option == 0):
         open = util.Stack()
     elif(option == 1):
         open = util.Queue()
-    #elif(option == 2):
-        #open = util.PriorityQueueWithFunction(lambda getCostOfActions)
-
-    open.push((problem.getStartState(), "Stop",0,None ))
+   
+    #Init an open list for all the states we are going to search
+    open.push((problem.getStartState(), " ",0, [] ))
     closed = []
-    #final = []
+    
+    #Go on till the open list is empty
     while( not open.isEmpty()):
+    
+        #Take element of the list
         state = open.pop()
         
-   
-        
+        #Check if that element is the goal state, if so return a path from start to goal
         if(problem.isGoalState(state[0])):
-            
-                
-           
-            return state[3]
-             
+            li = state[3][:]
+            li.append(state[1])
+            return li[1:]
+        
+        #Generate the element's successors
         successors =  problem.getSuccessors(state[0])
-        print successors
-        for succ in successors:
-            if succ[0] not in closed:
-                closed.append(succ[0])
-                open.push((succ[0],succ[1],succ[2], (state[3]).extend( state[1]) ))
+        print state
+        
+        #If the element is not in the closed list we can add its successors 
+        if(state[0] not in closed):
+            #Add the element to the closed list
+            closed.append(state[0])
+            for succ in successors:
+                if (succ[0] not in closed): 
+                    li = state[3][:]
+                    li.append(state[1])
+                    open.push((succ[0],succ[1],succ[2], li ))
 
-
-    
-    
-    
+#OLD SEARCH FUNCTION
 def searchWithDatastruct(problem, option):
 
     if(option == 0):
@@ -166,7 +171,7 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    return searchWithDatastruct(problem,1) #Seach with Queue
+    return searchWithDatastruct2(problem,1) #Seach with Queue
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
