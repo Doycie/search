@@ -171,7 +171,8 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     
-    #Make a queue for the open list for the states we want to check
+    #Make a Stack for the open list for the states we want to check
+    #In DFS we always want to check the deepest state, so a stack works well
     open = util.Stack()
     open.push((problem.getStartState(), " ",0, [] ))
     
@@ -212,6 +213,7 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     
     #Make a queue for the open list for the states we want to check
+    #In BFS we always want to search to shortest node path so a queue works
     open = util.Queue()
     open.push((problem.getStartState(), " ",0, [] ))
     
@@ -250,7 +252,6 @@ def breadthFirstSearch(problem):
     
     return []
 
-def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     
     
@@ -279,6 +280,57 @@ def uniformCostSearch(problem):
     
     
     util.raiseNotDefined()
+
+def uniformCostSearch(problem):
+    """Search the node of least total cost first."""
+    
+    
+     
+    #Make a PriorityQueue for the open list for the states we want to check
+    #In UCS we always want to check the cheepest node
+    open = util.PriorityQueue()
+    open.push((problem.getStartState(), " ",0, [] ),1)
+    
+    #Make a closed list so we know which states not to check
+    closed = []
+    
+    #Go on till the open list is empty
+    while( not open.isEmpty()):
+    
+        #Take the first element of the list
+        
+        state = open.pop()
+       
+        #Check if that element is the goal state, if so return a path from start to goal
+        if(problem.isGoalState(state[0])):
+            li = state[3][:]
+            li.append(state[1]) 
+            return li[1:]
+
+  
+        
+        #Generate the element's successors
+        successors =  problem.getSuccessors(state[0])
+        for succ in successors:
+           # print succ
+            #If the element is in the closed list ignore it
+            if(succ[0] in closed):
+
+                continue
+            #Make the list to that node to save in it
+            #closed.append(succ[0])
+            li = state[3][:]
+            li.append(state[1])
+            
+            #Add it to the open list
+            #print "li"
+            #print li[1:]
+            open.push((succ[0],succ[1],succ[2], li ), succ[2] + problem.getCostOfActions(li[1:]))
+        #Add the state to the closed list so we dont check it again
+        closed.append(state[0])
+    
+    
+    return []
 
 def nullHeuristic(state, problem=None):
     """
