@@ -72,6 +72,14 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+
+    #Option specifies which datastructer to use
+    if(option == 0):
+        open = util.Stack()
+    elif(option == 1):
+        open = util.Queue()
+   
+#OLD SEARCH FUNCTION
 def searchWithDatastruct2(problem, option):
 
     #Option specifies which datastructer to use
@@ -147,8 +155,6 @@ def searchWithDatastruct(problem, option):
                 closed.append(succ[0])
                 open.push((succ[0],succ[1],succ[2],state))
 
-
-    
     
 def depthFirstSearch(problem):
     """
@@ -165,14 +171,84 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     
-    return searchWithDatastruct2(problem,0) #Search with Sack
-    util.raiseNotDefined()
+    #Make a queue for the open list for the states we want to check
+    open = util.Stack()
+    open.push((problem.getStartState(), " ",0, [] ))
+    
+    #Make a closed list so we know which states not to check
+    closed = []
+    
+    #Go on till the open list is empty
+    while( not open.isEmpty()):
+    
+        #Take the first element of the list
+        state = open.pop()
+        
+        #Check if that element is the goal state, if so return a path from start to goal
+        if(problem.isGoalState(state[0])):
+            li = state[3][:]
+            li.append(state[1]) 
+            return li[1:]
+
+        #Generate the element's successors
+        successors =  problem.getSuccessors(state[0])
+        for succ in successors:
+            #If the element is in the closed list ignore it
+            if(succ[0] in closed):
+                continue
+            #Make the list to that node to save in it
+            li = state[3][:]
+            li.append(state[1])
+            #Add it to the open list
+            open.push((succ[0],succ[1],succ[2], li ))
+        #Add the state to the closed list so we dont check it again
+        closed.append(state[0])
+    
+    
+    return []
     
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    return searchWithDatastruct2(problem,1) #Seach with Queue
-    util.raiseNotDefined()
+    
+    #Make a queue for the open list for the states we want to check
+    open = util.Queue()
+    open.push((problem.getStartState(), " ",0, [] ))
+    
+    #Make a closed list so we know which states not to check
+    closed = []
+    
+    #Go on till the open list is empty
+    while( not open.isEmpty()):
+    
+        #Take the first element of the list
+        state = open.pop()
+        
+        #Check if that element is the goal state, if so return a path from start to goal
+        if(problem.isGoalState(state[0])):
+            li = state[3][:]
+            li.append(state[1]) 
+            return li[1:]
+
+        #Generate the element's successors
+        successors =  problem.getSuccessors(state[0])
+        for succ in successors:
+            #If the element is in the closed list ignore it
+            if(succ[0] in closed):
+                continue
+            #Difference between DFS and BFS add the successor to the closed list as well
+            #because if a node has already been found onces we dont want to check it again
+            closed.append(succ[0])
+            #Make the list to that node to save in it
+            li = state[3][:]
+            li.append(state[1])
+            #Add it to the open list
+            open.push((succ[0],succ[1],succ[2], li ))
+        #Add the state to the closed list so we dont check it again
+        closed.append(state[0])
+    
+    
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
