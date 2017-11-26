@@ -276,7 +276,7 @@ def breadthFirstSearch(problem):
         for succ in successors:
             if succ[0] not in closed:
                 closed.append(succ[0])
-                open.push((succ[0],succ[1],succ[2],state, state[2] + state[4] ), state[2] + state[4] )
+                open.push((succ[0],succ[1],succ[2], state, state[2] + state[4] ), state[2] + state[4] )
     
     
     util.raiseNotDefined()
@@ -306,28 +306,29 @@ def uniformCostSearch(problem):
             li = state[3][:]
             li.append(state[1]) 
             return li[1:]
-
-  
         
-        #Generate the element's successors
-        successors =  problem.getSuccessors(state[0])
-        for succ in successors:
-           # print succ
+        
+        if state[0] not in closed:
+            closed.append(state[0])
+            #Generate the element's successors
+            successors =  problem.getSuccessors(state[0])
+            for succ in successors:
+            #print succ
             #If the element is in the closed list ignore it
-            if(succ[0] in closed):
-
-                continue
-            #Make the list to that node to save in it
-            #closed.append(succ[0])
-            li = state[3][:]
-            li.append(state[1])
+                if(succ[0] in closed):
+                    continue
             
-            #Add it to the open list
-            #print "li"
-            #print li[1:]
-            open.push((succ[0],succ[1],succ[2], li ), succ[2] + problem.getCostOfActions(li[1:]))
-        #Add the state to the closed list so we dont check it again
-        closed.append(state[0])
+                #Make the list to that node to save in it
+                #closed.append(succ[0])
+                li = state[3][:]
+                li.append(state[1])
+                
+                #Add it to the open list
+                #print "li"
+                #print li[1:]
+                open.push((succ[0],succ[1],succ[2], li ), succ[2] + problem.getCostOfActions(li[1:]))
+                #Add the state to the closed list so we dont check it again
+            
     
     
     return []
