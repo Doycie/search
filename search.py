@@ -72,90 +72,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-
-    #Option specifies which datastructer to use
-    if(option == 0):
-        open = util.Stack()
-    elif(option == 1):
-        open = util.Queue()
-   
-#OLD SEARCH FUNCTION
-def searchWithDatastruct2(problem, option):
-
-    #Option specifies which datastructer to use
-    if(option == 0):
-        open = util.Stack()
-    elif(option == 1):
-        open = util.Queue()
-   
-    #Init an open list for all the states we are going to search
-    open.push((problem.getStartState(), " ",0, [] ))
-    closed = []
-    
-    #Go on till the open list is empty
-    while( not open.isEmpty()):
-    
-        #Take element of the list
-        state = open.pop()
-        
-        #Check if that element is the goal state, if so return a path from start to goal
-        if(problem.isGoalState(state[0])):
-            li = state[3][:]
-            li.append(state[1])
-            return li[1:]
-        
-        #Generate the element's successors
-        successors =  problem.getSuccessors(state[0])
-        print state
-        
-        #If the element is not in the closed list we can add its successors 
-        if(state[0] not in closed):
-            #Add the element to the closed list
-            closed.append(state[0])
-            for succ in successors:
-                if (succ[0] not in closed): 
-                    li = state[3][:]
-                    li.append(state[1])
-                    open.push((succ[0],succ[1],succ[2], li ))
-
-#OLD SEARCH FUNCTION
-def searchWithDatastruct(problem, option):
-
-    if(option == 0):
-        open = util.Stack()
-    elif(option == 1):
-        open = util.Queue()
-    #elif(option == 2):
-        #open = util.PriorityQueueWithFunction(lambda getCostOfActions)
-
-    open.push((problem.getStartState(), "Stop",0,None ))
-    closed = []
-    final = []
-    while( not open.isEmpty()):
-        state = open.pop()
-        
-   
-        
-        if(problem.isGoalState(state[0])):
-            tempstate = state[3]
-            final.append(state[1])
-         
-            while(not tempstate == None ):
-                final.append(tempstate[1])
-                tempstate = tempstate[3]
-                
-                
-           
-            return (list(reversed(final)))[1:]
-             
-        successors =  problem.getSuccessors(state[0])
-        print successors
-        for succ in successors:
-            if succ[0] not in closed:
-                closed.append(succ[0])
-                open.push((succ[0],succ[1],succ[2],state))
-
-    
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -194,12 +110,15 @@ def depthFirstSearch(problem):
         #Generate the element's successors
         successors =  problem.getSuccessors(state[0])
         for succ in successors:
-            #If the element is in the closed list ignore it
-            if(succ[0] in closed):
-                continue
+            
             #Make the list to that node to save in it
             li = state[3][:]
             li.append(state[1])
+            
+            #If the element is in the closed list ignore it
+            if(succ[0] in closed):
+                continue
+
             #Add it to the open list
             open.push((succ[0],succ[1],succ[2], li ))
         #Add the state to the closed list so we dont check it again
@@ -235,15 +154,18 @@ def breadthFirstSearch(problem):
         #Generate the element's successors
         successors =  problem.getSuccessors(state[0])
         for succ in successors:
+            
+            #Make the list to that node to save in it
+            li = state[3][:]
+            li.append(state[1])
+        
             #If the element is in the closed list ignore it
             if(succ[0] in closed):
                 continue
             #Difference between DFS and BFS add the successor to the closed list as well
             #because if a node has already been found onces we dont want to check it again
             closed.append(succ[0])
-            #Make the list to that node to save in it
-            li = state[3][:]
-            li.append(state[1])
+
             #Add it to the open list
             open.push((succ[0],succ[1],succ[2], li ))
         #Add the state to the closed list so we dont check it again
@@ -252,40 +174,9 @@ def breadthFirstSearch(problem):
     
     return []
 
-    """Search the node of least total cost first."""
-    
-    
-    open = util.PriorityQueue()
-    open.push((problem.getStartState(), "Stop",0,None,0 ),0 )
-    closed = []
-    final = []
-    while( not open.isEmpty()):
-        state = open.pop()
-
-        if(problem.isGoalState(state[0])):
-            tempstate = state[3]
-            final.append(state[1])
-            while(not tempstate == None ):
-                final.append(tempstate[1])
-                tempstate = tempstate[3]
-            
-            return (list(reversed(final)))
-             
-        successors =  problem.getSuccessors(state[0])
-        
-        for succ in successors:
-            if succ[0] not in closed:
-                closed.append(succ[0])
-                open.push((succ[0],succ[1],succ[2], state, state[2] + state[4] ), state[2] + state[4] )
-    
-    
-    util.raiseNotDefined()
-
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    
-    
-     
+
     #Make a PriorityQueue for the open list for the states we want to check
     #In UCS we always want to check the cheepest node
     open = util.PriorityQueue()
@@ -307,30 +198,25 @@ def uniformCostSearch(problem):
             li.append(state[1]) 
             return li[1:]
         
-        
+        #If the state is not in the closed list go through its successors
         if state[0] not in closed:
+            #Add the state to the closed list so we dont check it again
             closed.append(state[0])
             #Generate the element's successors
             successors =  problem.getSuccessors(state[0])
+            
+            #Make the list to that node to save in it
+            #closed.append(succ[0])
+            li = state[3][:]
+            li.append(state[1])
+
             for succ in successors:
-            #print succ
             #If the element is in the closed list ignore it
                 if(succ[0] in closed):
                     continue
-            
-                #Make the list to that node to save in it
-                #closed.append(succ[0])
-                li = state[3][:]
-                li.append(state[1])
-                
                 #Add it to the open list
-                #print "li"
-                #print li[1:]
                 open.push((succ[0],succ[1],succ[2], li ), succ[2] + problem.getCostOfActions(li[1:]))
-                #Add the state to the closed list so we dont check it again
-            
-    
-    
+
     return []
 
 def nullHeuristic(state, problem=None):
@@ -341,9 +227,45 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #Make a PriorityQueue for the open list for the states we want to check
+    #In Astar we always want to check the cheepest node
+    #The cost is the Heuristic added to the cost to get to that point from UCS
+    open = util.PriorityQueue()
+    open.push((problem.getStartState(), " ",0, [] ),1)
+    
+    #Make a closed list so we know which states not to check
+    closed = []
+    
+    #Go on till the open list is empty
+    while( not open.isEmpty()):
+        #Take the first element of the list  
+        state = open.pop()
+       
+        #Check if that element is the goal state, if so return a path from start to goal
+        if(problem.isGoalState(state[0])):
+            li = state[3][:]
+            li.append(state[1]) 
+            return li[1:]
+        
+        #If the state is not in the closed list go through its successors
+        if state[0] not in closed:
+            #Add it to closed so we dont check it again
+            closed.append(state[0])
+            #Generate the element's successors
+            successors =  problem.getSuccessors(state[0])
+            
+            #Make the path to that node to save in it
+            li = state[3][:]
+            li.append(state[1])
+
+            for succ in successors:
+                #If the element is in the closed list ignore it
+                if(succ[0] in closed):
+                    continue
+                #Add it to the open list
+                open.push((succ[0],succ[1],succ[2], li ), heuristic(succ[0], problem) + succ[2] + problem.getCostOfActions(li[1:]))
+
+    return []
 
 
 # Abbreviations
