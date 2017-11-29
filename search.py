@@ -148,7 +148,8 @@ def breadthFirstSearch(problem):
         #Check if that element is the goal state, if so return a path from start to goal
         if(problem.isGoalState(state[0])):
             li = state[3][:]
-            li.append(state[1]) 
+            li.append(state[1])
+            
             return li[1:]
 
         #Generate the element's successors
