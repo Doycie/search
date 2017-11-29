@@ -370,7 +370,16 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
+def dist(point1, point2):
+    x , y = point1
+    px,py = point2
+    dx = x - px
+    dy = y - py
+    return math.sqrt( dx *dx + dy*dy)
 
+def euclidieanDistance (pointA, pointB):
+    return abs(pointA[0] - pointB[0]) + abs(pointA[1] - pointB[1])
+    
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -388,21 +397,29 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     pos , notVisCor = state
+    notVisitedCorners = notVisCor[:]
+
+    heur = 0
+    while(len(notVisitedCorners) > 0):
+        closestCorner = notVisitedCorners[0]
+        mindistance = dist(pos , closestCorner)
+        
+        for c in notVisitedCorners[1:]:
+            if(dist( pos , c) < mindistance ):
+                
+                mindistance = dist( pos , c)
+                closestCorner = c
+        
+        heur += dist(pos , closestCorner)
+        pos = closestCorner
+        notVisitedCorners.remove(closestCorner)
+         
     
-    mindistance = 1000.0
-    for cor in notVisCor:
-        x , y = pos
-        px,py = cor
-        dx = x - px
-        dy = y - py
-        distance = math.sqrt( dx *dx + dy*dy)
-        if(distance < mindistance):
-            mindistance = distance
-    
-    
+   
     "*** YOUR CODE HERE ***"
-    
-    return (  len(notVisCor) + (  mindistance/100.0)) # Default to trivial solution
+   
+   # print heur
+    return ( heur) # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -494,9 +511,45 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
+    pos, foodGrid = state
+    
+    foods = foodGrid.asList()[:]
+    if(len(foods) == 0):
+        return 0
+  
+    heur = 0
+
+    """ heur = 0
+    while(len(foods) > 0):
+        closestFood = foods[0]
+        mindistance = dist(pos , closestFood)
+        
+        for c in foods[1:]:
+            if(dist( pos , c) < mindistance ):
+                
+                mindistance = dist( pos , c)
+                closestFood = c
+        
+        heur += dist(pos , closestFood)
+        pos = closestFood
+        foods.remove(closestFood)"""
+    
+    
+    closestFood = foods[0]
+    mindistance = dist(pos , closestFood)
+    
+    for c in foods[1:]:
+        if(dist( pos , c) < mindistance ):
+            
+            mindistance = dist( pos , c)
+            closestFood = c
+    
+    heur += dist(pos , closestFood)
+    
+    
+    
     "*** YOUR CODE HERE ***"
-    return 0
+    return heur
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -527,6 +580,10 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        
+ 
+        
+        return search.aStarSearch(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -561,7 +618,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
+        
+        return self.food[x][y]
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
