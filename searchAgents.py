@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+import math
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -386,8 +387,22 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
+    pos , notVisCor = state
+    
+    mindistance = 1000.0
+    for cor in notVisCor:
+        x , y = pos
+        px,py = cor
+        dx = x - px
+        dy = y - py
+        distance = math.sqrt( dx *dx + dy*dy)
+        if(distance < mindistance):
+            mindistance = distance
+    
+    
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    
+    return (  len(notVisCor) + (  mindistance/100.0)) # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
