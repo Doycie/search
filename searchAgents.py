@@ -382,9 +382,11 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-def dist(point1, point2):
-    x , y = point1
-    px,py = point2
+        
+#Simple function to calculate the distance using actual euclidieanDistance
+def dist(p1, p2):
+    x , y = p1
+    px,py = p2
     dx = x - px
     dy = y - py
     return math.sqrt( dx *dx + dy*dy)
@@ -536,42 +538,29 @@ def foodHeuristic(state, problem):
     foods = foodGrid.asList()[:]
     if(len(foods) == 0):
         return 0
-  
-    heur = 0
-
-    """ heur = 0
-    while(len(foods) > 0):
-        closestFood = foods[0]
-        mindistance = dist(pos , closestFood)
         
-        for c in foods[1:]:
-            if(dist( pos , c) < mindistance ):
-                
-                mindistance = dist( pos , c)
-                closestFood = c
         
-        heur += dist(pos , closestFood)
-        pos = closestFood
-        foods.remove(closestFood)"""
-    
     #The same strategy as question 6 is not applicable since it might not be consitent
-    #For the corners the distant to the corner is always the minimal path lenght
+    #For the corners the distance to the corner is always the minimal path lenght
     #For the food this might not be true, always going to the closest food is not
     #neccisarally the best path
     
-    #So we take the closest food we can find
-    closestFood = foods[0]
-    mindistance = dist(pos , closestFood)
+    #Our strategy is to take the average distance to every food source
+    #Since this will only become smaller it will be a consistent heuristic
+    #For every step you take you will become closer to your goal
+    #It is also admissible because it never overestimates the distance to its goal
+    totaldistance = 0
+    lenghtlist = len(foods)
+    while(len(foods) > 0 ):
+        totaldistance += dist(pos,foods[0])
+        foods.remove(foods[0])
+        
     
-    for c in foods[1:]:
-        if(dist( pos , c) < mindistance ):
-            
-            mindistance = dist( pos , c)
-            closestFood = c
     
-    #Add the closest food we found to the heuristic
-    heur += dist(pos , closestFood)
-    return heur
+    
+    
+    return  (totaldistance/lenghtlist)
+    
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
