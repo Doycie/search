@@ -289,6 +289,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+
+        #Make a list to keep track of the corners we have NOT yet visited      
         self.notVisitedCornors = []
         
         
@@ -299,6 +301,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        
+        #In the beginning we set the list of corners we have not visted equal to all the corners
         c = []
         for corner in self.corners:
             c.append(corner)
@@ -312,8 +316,10 @@ class CornersProblem(search.SearchProblem):
         
         
         "*** YOUR CODE HERE ***"
-        pos , cor =  state
         
+        #The goal state is if all the all the corners have been visited
+        #The same as an empty corner list
+        pos , cor =  state  
         return (len(state[1]) == 0)
         util.raiseNotDefined()
 
@@ -338,18 +344,24 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            
+            #First we take all the information out the tuples
+            #pos it the postition of pacman and viscor a list of all corners
             pos , visCor = state
             px , py = pos
             
+            #Same as sample code
             dx , dy = Actions.directionToVector(action)
             nextx, nexty = int(px + dx), int(py+dy)
             hitsWall = self.walls[nextx][nexty]
             
+            #If we dont hit anywalls we can consider this action legal
             if(not hitsWall):
                 c = state[1][:]
+                #If the next position is one of the corners we can remove it from the list
                 if (nextx,nexty) in c:
                     c.remove((nextx,nexty))
-                        
+                #add the legal action to the possible successors
                 successors.append( ((( nextx,nexty) ,c), action,1)) 
            
             
@@ -396,11 +408,17 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
+    #First we take all the required information out the tuples
+    #The pos is the postition of pacman, notVisCor is a list of corners we havent visited yet
     pos , notVisCor = state
+    #Copy the list so we dont edit it
     notVisitedCorners = notVisCor[:]
 
+    #Set the heur equal to zero 
     heur = 0
+    #While the list of NOT visited corners contains something continue
     while(len(notVisitedCorners) > 0):
+        #Find the distance to the closest corner
         closestCorner = notVisitedCorners[0]
         mindistance = dist(pos , closestCorner)
         
@@ -410,16 +428,18 @@ def cornersHeuristic(state, problem):
                 mindistance = dist( pos , c)
                 closestCorner = c
         
+        #Add this distance to the heuristic
         heur += dist(pos , closestCorner)
+        #Our new position is the corner we just reached
         pos = closestCorner
+        #Remove that corner we reached from the list
         notVisitedCorners.remove(closestCorner)
          
-    
+    #The while loop will find the distance from pacman to the closest corner
+    #After that it will add the distance from that corner to the the next one
+    #It will keep going till all the corners have been covered
    
-    "*** YOUR CODE HERE ***"
-   
-   # print heur
-    return ( heur) # Default to trivial solution
+    return ( heur) 
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -534,7 +554,12 @@ def foodHeuristic(state, problem):
         pos = closestFood
         foods.remove(closestFood)"""
     
+    #The same strategy as question 6 is not applicable since it might not be consitent
+    #For the corners the distant to the corner is always the minimal path lenght
+    #For the food this might not be true, always going to the closest food is not
+    #neccisarally the best path
     
+    #So we take the closest food we can find
     closestFood = foods[0]
     mindistance = dist(pos , closestFood)
     
@@ -544,11 +569,8 @@ def foodHeuristic(state, problem):
             mindistance = dist( pos , c)
             closestFood = c
     
+    #Add the closest food we found to the heuristic
     heur += dist(pos , closestFood)
-    
-    
-    
-    "*** YOUR CODE HERE ***"
     return heur
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -581,8 +603,7 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         
- 
-        
+        #Use a star search to find the closest path with the anyfoodsearchproblem agent
         return search.aStarSearch(problem)
         util.raiseNotDefined()
 
@@ -619,9 +640,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
         
+        #Return true if pacman is on the food coordinates
         return self.food[x][y]
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
     """
